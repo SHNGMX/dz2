@@ -184,31 +184,114 @@ namespace dz2
 
         private void button6_Click(object sender, EventArgs e)
         {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < dataGridView1.Columns.Count; i++)
+            if (dataGridView1.Rows.Count > 0)
             {
-                sb.Append(dataGridView1.Columns[i].HeaderText);
-                sb.Append(",");
-            }
-            sb.AppendLine();
-            for (int i = 0; i < dataGridView1.Rows.Count; i++)
-            {
-                for (int j = 0; j < dataGridView1.Columns.Count; j++)
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "CSV (*.csv)|*.csv|TXT(*.txt) | *.txt";
+                sfd.FileName = "1.csv";
+                bool fileError = false;
+                if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    sb.Append(dataGridView1.Rows[i].Cells[j].Value.ToString());
-                    sb.Append(",");
-                }
-                sb.AppendLine();
-            }
+                    if (File.Exists(sfd.FileName))
+                    {
+                        try
+                        {
+                            File.Delete(sfd.FileName);
+                        }
+                        catch (IOException ex)
+                        {
+                            fileError = true;
+                            MessageBox.Show("Невозможно создать файл" + ex.Message);
+                        }
+                    }
+                    if (!fileError)
+                    {
+                        try
+                        {
+                            int columnCount = dataGridView1.Columns.Count;
+                            string columnNames = "";
+                            string[] outputCsv = new string[dataGridView1.Rows.Count + 1];
+                            for (int i = 0; i < columnCount; i++)
+                            {
+                                columnNames += dataGridView1.Columns[i].HeaderText.ToString() + ",";
+                            }
+                            outputCsv[0] += columnNames;
 
-            //Сохранение данных в файл CSV
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "CSV(*.csv)|*.csv";
-            sfd.FileName = "data.csv";
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                File.WriteAllText(sfd.FileName, sb.ToString());
+                            for (int i = 1; (i - 1) < dataGridView1.Rows.Count; i++)
+                            {
+                                for (int j = 0; j < columnCount; j++)
+                                {
+                                    outputCsv[i] += dataGridView1.Rows[i - 1].Cells[j].Value.ToString() + ",";
+                                }
+                            }
+
+                            File.WriteAllLines(sfd.FileName, outputCsv, Encoding.UTF8);
+                            MessageBox.Show("Успех", "Успешно");
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Ошибка :" + ex.Message);
+                        }
+                    }
+                }
             }
+            else
+            {
+                MessageBox.Show("Нет данных для экспорта", "Ошбка");
+            }
+        }
+    
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            CreateColumns();
+            RefreshDataGrid(dataGridView1);
+            textBox4.Visible = false;
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            selectedRow = e.RowIndex;
+
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dataGridView1.Rows[selectedRow];
+                textBox4.Text = row.Cells[0].Value.ToString();
+                textBox2.Text = row.Cells[1].Value.ToString();
+                textBox3.Text = row.Cells[2].Value.ToString();
+
+            }
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            Form2 form2 = new Form2();
+            form2.Show();
+        }
+
+        private void button5_Click_1(object sender, EventArgs e)
+        {
+            RefreshDataGrid(dataGridView1);
+        }
+
+        private void textBox1_TextChanged_1(object sender, EventArgs e)
+        {
+            Search(dataGridView1);
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            Update();
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            Change();
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            deleteRow();
         }
     }
 }

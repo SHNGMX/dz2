@@ -9,7 +9,7 @@ namespace dz2
 {
      class Class1
     {
-        SqlConnection con = new SqlConnection(@"Data Source = LAPTOP-56D10KLL\ALEXEY; Initial Catalog = contacts; Integrated Security = true");
+        SqlConnection con = new SqlConnection(@"Server = db.edu.cchgeu.ru; User = 201s_Tkachenko; Password = QazWsxEdc123;Database = 201s_Tkachenko");
 
 
 

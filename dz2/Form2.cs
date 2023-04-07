@@ -36,5 +36,23 @@ namespace dz2
 
             dataBase.closeConnection();
         }
+
+        private void Form2_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            dataBase.openConnection();
+            var name = textBox1.Text;
+            var number = textBox2.Text;
+            var addQuery = $"insert into contacts (contact_name,contact_number) values ('{name}','{number}')";
+            var command = new SqlCommand(addQuery, dataBase.getConnection());
+            command.ExecuteNonQuery();
+            this.Hide();
+
+            dataBase.closeConnection();
+        }
     }
 }
